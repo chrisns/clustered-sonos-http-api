@@ -1,0 +1,45 @@
+version: "3"
+services:
+  http_api:
+    image: chrisns/docker-node-sonos-http-api:latest
+    networks:
+      - proxy
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels:
+        - com.df.notify=true
+        - com.df.distribute=true
+        - com.df.serviceDomain=sonos.p.cns.me
+        - com.df.servicePath=/
+        - com.df.port=5005
+        - com.df.redirectWhenHttpProto=true
+    volumes:
+      - settings:/app/settings
+      - clips:/app/static/clips
+      - cache:/app/cache
+      - presets:/app/presets
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  settings:
+    driver: nfs
+    driver_opts:
+      share: "192.168.0.3:/volume2/cluster/sonos/settings"
+  clips:
+    driver: nfs
+    driver_opts:
+      share: "192.168.0.3:/volume2/cluster/sonos/clips"
+  cache:
+    driver: nfs
+    driver_opts:
+      share: "192.168.0.3:/volume2/cluster/sonos/cache"
+  presets:
+    driver: nfs
+    driver_opts:
+      share: "192.168.0.3:/volume2/cluster/sonos/presets"
+
+
